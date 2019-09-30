@@ -14,7 +14,7 @@ const MAJENTA: [[u32; 4]; 4] = [[0,0,0,0],[0,7,0,0],[7,7,7,0],[0,0,0,0]];
 struct Reserve {
     // TODO implement attribute "Matrix" form
     // "Matrix" form,
-    u32 switched,
+    switched: u32,
 }
 
 impl Reserve {
@@ -24,14 +24,14 @@ impl Reserve {
 }
 
 struct Tetromino {
-    u32 x,
-    u32 y,
+    x: u32,
+    y: u32,
     // TODO implement attribute "Matrix" form
     // "Matrix" form,
-    Field &field,
+    &field: Field,
     // TODO implement attribute Watchdog or Timer
     // "Watchdog" watchdog,
-    Reserve reserve,
+    reserve: Reserve,
     // TODO implement attribute "Matrix3D" nextform
     // "Matrix3D" nextform,
 }
