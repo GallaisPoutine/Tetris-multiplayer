@@ -1,9 +1,15 @@
 [package]
-name = "mutlijoueur-tetris"
+name = "tetris"
 version = "0.1.0"
-authors = ["GALLAIS-POU Raphaël <raphael.gallaispou@reseau.eseo.fr>"]
+authors = ["GIRARD Olivier <olivier.girard@reseau.eseo.fr>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+rand = "0.7.2"
+termion = "1.5.3"
+timer = "0.2.0"
+chrono = "0.4.9"
+tokio = "0.1.22"
+nix = "0.15.0"
