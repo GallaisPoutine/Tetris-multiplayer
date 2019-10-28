@@ -5,8 +5,8 @@ use std::sync::mpsc;
 use std::thread;
 use termion::{event::Key, raw::IntoRawMode, input::TermRead};
 
-pub fn start(tx: &mpsc::Sender<String>) {
-    let co : Connection = Connection::new(false);
+pub fn start(tx: &mpsc::Sender<String>, ip : String) {
+    let co : Connection = Connection::new(false, ip);
     key_listener(&co);
     // connection_listener(&co, tx);
 }
@@ -25,13 +25,13 @@ fn key_listener(co : &Connection) {
                     Key::Char('a')	=> command.push('a'),
                     Key::Char('e')	=> command.push('e'),
                     Key::Char('r')	=> command.push('r'),
-                    Key::Esc		=> {
-                        command.push('E');
-                        reading_connection.close_socket();
-                    },
+                    Key::Esc		=> command.push('E'),
                     _				=> command.clear(),
                 }
                 reading_connection.write(&command);
+                if command.eq(&String::from("/E")) {
+                    reading_connection.close_socket();
+                }
                 command.clear();
             }
         }

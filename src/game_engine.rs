@@ -159,7 +159,10 @@ pub fn multi_player_online_host() {
 				"a" => tetromino1.lock().unwrap().left_rot(),
 				"e" => tetromino1.lock().unwrap().right_rot(),
 				"r" => tetromino1.lock().unwrap().switch(),
-				"E" => quit = true,
+				"E" => {
+					quit = true;
+					// TODO Exit socket properly ?
+					},
 				_   => println!(""),
 			}
 		}
@@ -193,10 +196,23 @@ pub fn multi_player_online_host() {
 }
 
 pub fn multi_player_online_join() {
-	println!("Starting client !\n");
+	// Get server IPv4 address
+	let mut ip = String::new();
+	print!("Please enter server IP address : ");
+	let _=stdout().flush();
+	stdin().read_line(&mut ip).expect("Did not enter a correct IP");
+	if let Some('\n')=ip.chars().next_back() {
+        ip.pop();
+    }
+    if let Some('\r')=ip.chars().next_back() {
+        ip.pop();
+    }
+
+	// Startint queue
 	let (tx, rx) = mpsc::channel::<String>();
 
-	start(&tx);
+	println!("Starting client !\n");
+	start(&tx, String::from(ip));
 
     // DELETE THIS GARBAGE !
     loop {}

@@ -11,14 +11,14 @@ pub struct Connection {
 
 impl Connection {
 
-    pub fn new(is_server : bool) -> Connection {
+    pub fn new(is_server : bool, ip : String) -> Connection {
         if is_server {
             Connection {
                 stream : Connection::init_socket_serveur(),
             }
         } else {
             Connection {
-                stream : Connection::init_socket_client(),
+                stream : Connection::init_socket_client(ip),
             }
         }
     }
@@ -38,8 +38,9 @@ impl Connection {
         }
     }
 
-    fn init_socket_client() -> TcpStream {
-        match TcpStream::connect("127.0.0.1:12345") {
+    fn init_socket_client(mut ip : String) -> TcpStream {
+        ip.push_str(":12345");
+        match TcpStream::connect(ip) {
             Ok(stream) => {
                 println!("Successfully connected to server in port 12345");
                 stream
