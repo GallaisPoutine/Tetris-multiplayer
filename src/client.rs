@@ -8,7 +8,7 @@ use termion::{event::Key, raw::IntoRawMode, input::TermRead};
 pub fn start(tx: &mpsc::Sender<String>, ip : String) {
     let co : Connection = Connection::new(false, ip);
     key_listener(&co);
-    // connection_listener(&co, tx);
+    connection_listener(&co, tx);
 }
 
 fn key_listener(co : &Connection) {
@@ -41,6 +41,7 @@ fn key_listener(co : &Connection) {
 fn connection_listener(co : &Connection, tx: &mpsc::Sender<String>) {
     let mut reading_connection = co.try_clone().unwrap();
     let tx1 = mpsc::Sender::clone(&tx);
+
     thread::spawn(move|| {
         let msg = reading_connection.read();
         match msg.len() {

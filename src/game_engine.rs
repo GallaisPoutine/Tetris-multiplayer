@@ -124,7 +124,7 @@ pub fn multi_player_online_host() {
 	let (tx, rx) = mpsc::channel::<String>();
 
 
-	let mut server: Server = Server::new();
+	let server: Server = Server::new();
 	server.start(tx);
 
 	show_multi_player_game(&mut tetromino1.lock().unwrap(), &mut tetromino2.lock().unwrap());
@@ -209,7 +209,7 @@ pub fn multi_player_online_join() {
     }
 
 	// Startint queue
-	let (tx, rx) = mpsc::channel::<String>();
+	let (tx, _rx) = mpsc::channel::<String>();
 
 	println!("Starting client !\n");
 	start(&tx, String::from(ip));

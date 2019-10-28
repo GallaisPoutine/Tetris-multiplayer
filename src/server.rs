@@ -54,7 +54,7 @@ impl Server {
         }
     }
 
-    pub fn write(&mut self, msg: & str) {
-        self.co.write(msg);
-    }
+    // pub fn write(&mut self, msg: & str) {
+    //     self.co.write(msg);
+    // }
 }
