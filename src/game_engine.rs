@@ -188,20 +188,8 @@ pub fn multi_player_online_host() {
 		// 	}
 		// 	break;
 		// }
-
 	}
 	drop(guard1);
-	// while match rx.recv().unwrap(){
-	// 	"z".to_owned().to_string() => tetromino1.lock().unwrap().straight_down_blocking(),
-	// 	"q".to_owned().to_string() => tetromino1.lock().unwrap().left(),
-	// 	"s".to_owned().to_string() => tetromino1.lock().unwrap().down(),
-	// 	"d".to_owned().to_string() => tetromino1.lock().unwrap().right(),
-	// 	"a".to_owned().to_string() => tetromino1.lock().unwrap().left_rot(),
-	// 	"e".to_owned().to_string() => tetromino1.lock().unwrap().right_rot(),
-	// 	"r".to_owned().to_string() => tetromino1.lock().unwrap().switch(),
-	// 	"E".to_owned().to_string() => quit = true,
-	// 	_   => println!(""),
-	// }{};
 }
 
 pub fn multi_player_online_join() {
