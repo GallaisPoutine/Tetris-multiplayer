@@ -50,7 +50,6 @@ fn connection_listener(co : &Connection, tx: &mpsc::Sender<String>) {
                 reading_connection.close_socket();
             },
             2 => {
-                    println!("Will be decoded: {}", msg);
                     decode(msg.as_str(), &tx1);
                 },
             _ => panic!("msg.length != 2 || != 0"),

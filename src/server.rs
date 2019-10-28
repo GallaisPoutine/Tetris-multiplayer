@@ -13,7 +13,7 @@ impl Server {
 
     pub fn new() -> Server { //tx : mpsc::Sender<String>) -> Server {
         Server {
-            co : Connection::new(true),
+            co : Connection::new(true), 
         }
     }
 
@@ -21,36 +21,34 @@ impl Server {
         let mut connection = self.co.try_clone().unwrap();
     	let tx1 = mpsc::Sender::clone(&tx);
 
-        thread::spawn(move|| {
-            let mut msg = connection.read();
-            match msg.len() {
-                0 => {
-                    println!("An error occurred, terminating connection with {}", 
-                            connection.get_stream().peer_addr().unwrap());
-                    connection.close_socket();
-                    false
-                },
-                2 => {
-                    println!("Will be decoded: {}", msg);
-                    Server::decode(msg.as_str(), &tx1);
-                    true
-                },
-                _ => panic!("msg.length != 2 || != 0"),
-            }
-            // while match connection.read().len() {
-            //     0 => {
-            //         println!("An error occurred, terminating connection with {}", 
-            //                 connection.get_stream().peer_addr().unwrap());
-            //         connection.close_socket();
-            //         false
-            //     },
-            //     2 => {
-            //         println!("Will be decoded: {}", msg);
-            //         Server::decode(msg.as_str(), &tx1);
-            //         true
-            //     },
-            //     _ => panic!("msg.length != 2 || != 0"),
-            // }{}
+        thread::spawn(move|| 
+            loop {
+                let msg = connection.read();
+                match msg.len() {
+                    0 => {
+                        println!("An error occurred, terminating connection with {}", 
+                                connection.get_stream().peer_addr().unwrap());
+                        connection.close_socket();
+                    },
+                    2 => {
+                        Server::decode(msg.as_str(), &tx1);
+                    },
+                    _ => panic!("msg.length != 2 || != 0"),
+                }
+                // while match connection.read().len() {
+                //     0 => {
+                //         println!("An error occurred, terminating connection with {}", 
+                //                 connection.get_stream().peer_addr().unwrap());
+                //         connection.close_socket();
+                //         false
+                //     },
+                //     2 => {
+                //         println!("Will be decoded: {}", msg);
+                //         Server::decode(msg.as_str(), &tx1);
+                //         true
+                //     },
+                //     _ => panic!("msg.length != 2 || != 0"),
+                // }{}
         });
     }
 

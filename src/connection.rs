@@ -26,7 +26,7 @@ impl Connection {
     // PRIVATE FUNCTIONS USED FOR CONSTRUCTOR
 
     fn init_socket_serveur() -> TcpStream {
-        let listener = TcpListener::bind("0.0.0.0:12345").unwrap(); //bind("127.0.0.1:12345").unwrap();
+        let listener = TcpListener::bind("0.0.0.0:12345").unwrap();
         println!("Server listening on port 12345");
 
         match listener.accept() {
