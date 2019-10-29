@@ -42,19 +42,23 @@ impl Server {
         let mut func : String = function.to_owned().to_string();
         assert_eq!(func.remove(0), '/');
         match func.as_str() {
-            "z" => tx.send("z".to_owned().to_string()).unwrap(),
-            "q" => tx.send("q".to_owned().to_string()).unwrap(),
-            "s" => tx.send("s".to_owned().to_string()).unwrap(),
-            "d" => tx.send("d".to_owned().to_string()).unwrap(),
-            "a" => tx.send("a".to_owned().to_string()).unwrap(),
-            "e" => tx.send("e".to_owned().to_string()).unwrap(),
-            "r" => tx.send("r".to_owned().to_string()).unwrap(),
-            "E" => tx.send("E".to_owned().to_string()).unwrap(),
+            "z" => tx.send("z t1".to_owned().to_string()).unwrap(),
+            "q" => tx.send("q t1".to_owned().to_string()).unwrap(),
+            "s" => tx.send("s t1".to_owned().to_string()).unwrap(),
+            "d" => tx.send("d t1".to_owned().to_string()).unwrap(),
+            "a" => tx.send("a t1".to_owned().to_string()).unwrap(),
+            "e" => tx.send("e t1".to_owned().to_string()).unwrap(),
+            "r" => tx.send("r t1".to_owned().to_string()).unwrap(),
+            "E" => tx.send("E t1".to_owned().to_string()).unwrap(),
             _   => panic!("Character not found"),
         }
     }
 
     pub fn write(&mut self, msg: & str) {
         self.co.write(msg);
+    }
+
+    pub fn close_socket(&mut self) {
+        self.co.close_socket();
     }
 }

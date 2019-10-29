@@ -4,7 +4,6 @@ use std::net::{TcpStream, TcpListener, Shutdown};
 use std::str::from_utf8;
 
 
-
 pub struct Connection {
     stream : TcpStream,
 }
@@ -74,25 +73,6 @@ impl Connection {
         println!("Message received: {}\r\n", buf_str);
         buf_str
     }
-
-    // Useless for now
-
-    // pub fn handle_client(&mut self) {
-    //     let buf = [0 as u8; 50];
-    //     while match self.read().len() {
-    //         0 => {
-    //             // print stream input
-    //             println!("{}", from_utf8(&buf).unwrap());
-
-    //             true
-    //         },
-    //         _ => {
-    //             println!("An error occurred, terminating connection with {}", self.stream.peer_addr().unwrap());
-    //             self.close_socket();
-    //             false
-    //         }
-    //     } {}
-    // }
 
     pub fn try_clone(&self) -> io::Result<Connection> {
         let stream = self.stream.try_clone()?;

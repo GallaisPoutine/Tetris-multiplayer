@@ -3,12 +3,10 @@
 extern crate timer;
 extern crate chrono;
 
-//use timer::Timer;
-//use std::thread;
-
-use termion::{event::Key, raw::IntoRawMode, input::TermRead};
 use std::io::*;
 use std::sync::{Arc, Mutex, mpsc};
+use std::thread;
+use termion::{event::Key, raw::IntoRawMode, input::TermRead};
 
 use crate::tetromino::*;
 use crate::field::*;
@@ -115,7 +113,7 @@ pub fn multi_player_online_host() {
 	let mut number_of_lines1 : u32 = 0;
 	let mut number_of_lines2 : u32 = 0;
 	let go_down_time : i64 = 1000;
-	// let _stdout = stdout().into_raw_mode().unwrap();
+	let _stdout = stdout().into_raw_mode().unwrap();
 	let mut quit = false;
 
 	let timer = timer::Timer::new();
@@ -124,6 +122,7 @@ pub fn multi_player_online_host() {
 
 	let (tx, rx) = mpsc::channel::<String>();
 
+	key_listener_host(&tx);
 
 	let mut server: Server = Server::new();
 	server.start(tx);
@@ -138,7 +137,7 @@ pub fn multi_player_online_host() {
 			t1.lock().unwrap().down_blocking();
 			t2.lock().unwrap().down_blocking();
 			show_multi_player_game(&mut t1.lock().unwrap(), &mut t2.lock().unwrap());
-			server.write("/D");
+			// server.write("/D");
 		})
 	};
 
@@ -151,38 +150,32 @@ pub fn multi_player_online_host() {
 		// Handling error case
 		if received.is_ok() {
 			match received.unwrap().as_str() {
-				"z" => tetromino1.lock().unwrap().straight_down_blocking(),
-				"q" => tetromino1.lock().unwrap().left(),
-				"s" => tetromino1.lock().unwrap().down(),
-				"d" => tetromino1.lock().unwrap().right(),
-				"a" => tetromino1.lock().unwrap().left_rot(),
-				"e" => tetromino1.lock().unwrap().right_rot(),
-				"r" => tetromino1.lock().unwrap().switch(),
-				"E" => {
+				"z t1" => tetromino1.lock().unwrap().straight_down_blocking(),
+				"q t1" => tetromino1.lock().unwrap().left(),
+				"s t1" => tetromino1.lock().unwrap().down(),
+				"d t1" => tetromino1.lock().unwrap().right(),
+				"a t1" => tetromino1.lock().unwrap().left_rot(),
+				"e t1" => tetromino1.lock().unwrap().right_rot(),
+				"r t1" => tetromino1.lock().unwrap().switch(),
+				"E t1" => {
 					quit = true;
 					// TODO Exit socket properly ?
+					server.close_socket();
 				},
-				_   => println!(""),
-			}
-		}
-
-		for c in stdin().keys() {
-			match c.unwrap() {
-				Key::Char('z')	=> tetromino2.lock().unwrap().straight_down_blocking(),
-				Key::Char('q')	=> tetromino2.lock().unwrap().left(),
-				Key::Char('s')	=> tetromino2.lock().unwrap().down(),
-				Key::Char('d')	=> tetromino2.lock().unwrap().right(),
-				Key::Char('a')	=> tetromino2.lock().unwrap().left_rot(),
-				Key::Char('e')	=> tetromino2.lock().unwrap().right_rot(),
-				Key::Char('r')	=> tetromino2.lock().unwrap().switch(),
-
-				Key::Esc		=> {
+				"z t2" => tetromino2.lock().unwrap().straight_down_blocking(),
+				"q t2" => tetromino2.lock().unwrap().left(),
+				"s t2" => tetromino2.lock().unwrap().down(),
+				"d t2" => tetromino2.lock().unwrap().right(),
+				"a t2" => tetromino2.lock().unwrap().left_rot(),
+				"e t2" => tetromino2.lock().unwrap().right_rot(),
+				"r t2" => tetromino2.lock().unwrap().switch(),
+				"E t2" => {
 					quit = true;
 					// TODO Exit socket properly ?
+					server.close_socket();
 				},
-				_				=> println!(""),
+				_   => (),
 			}
-			break;
 		}
 
 		verify_destroyed_lines(tetromino1.lock().unwrap().get_field(), 
@@ -225,12 +218,12 @@ pub fn multi_player_online_join() {
 		// Handling error case
 		if received.is_ok() {
 			match received.unwrap().as_str() {
-				"D" => println!(""),// tetromino1.lock().unwrap().down(),
+				"D" => (),// tetromino1.lock().unwrap().down(),
 				"E" => {
 					quit = true;
 					// TODO Exit socket properly ?
 				},
-				_   => println!(""),
+				_   => (),
 			}
 		}
 	}
@@ -251,4 +244,25 @@ fn verify_destroyed_lines (field1 : &Field, field2 : &mut Field, number_of_lines
 		field2.is_in_losszone();
 	}
 	*number_of_lines = field1.get_number_of_lines();
+}
+
+fn key_listener_host(tx: &mpsc::Sender<String>) {
+	let tx1 = mpsc::Sender::clone(&tx);
+	thread::spawn(move || 
+	loop {
+		for c in stdin().keys() {
+			match c.unwrap() {
+				Key::Char('z')	=> tx1.send("z t2".to_owned().to_string()).unwrap(),
+				Key::Char('q')	=> tx1.send("q t2".to_owned().to_string()).unwrap(),
+				Key::Char('s')	=> tx1.send("s t2".to_owned().to_string()).unwrap(),
+				Key::Char('d')	=> tx1.send("d t2".to_owned().to_string()).unwrap(),
+				Key::Char('a')	=> tx1.send("a t2".to_owned().to_string()).unwrap(),
+				Key::Char('e')	=> tx1.send("e t2".to_owned().to_string()).unwrap(),
+				Key::Char('r')	=> tx1.send("r t2".to_owned().to_string()).unwrap(),
+				Key::Esc		=> tx1.send("E t2".to_owned().to_string()).unwrap(),
+				_				=> (),
+			}
+			break;
+		}
+	});
 }
