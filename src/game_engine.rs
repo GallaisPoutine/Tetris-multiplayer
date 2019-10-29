@@ -116,6 +116,7 @@ pub fn multi_player_online_host() {
 	let mut number_of_lines2 : u32 = 0;
 	let go_down_time : i64 = 1000;
 	// let _stdout = stdout().into_raw_mode().unwrap();
+	let mut quit = false;
 
 	let timer = timer::Timer::new();
 	let tetromino1 = Arc::new(Mutex::new(Tetromino::build_tetromino()));
@@ -124,7 +125,7 @@ pub fn multi_player_online_host() {
 	let (tx, rx) = mpsc::channel::<String>();
 
 
-	let server: Server = Server::new();
+	let mut server: Server = Server::new();
 	server.start(tx);
 
 	show_multi_player_game(&mut tetromino1.lock().unwrap(), &mut tetromino2.lock().unwrap());
@@ -137,15 +138,13 @@ pub fn multi_player_online_host() {
 			t1.lock().unwrap().down_blocking();
 			t2.lock().unwrap().down_blocking();
 			show_multi_player_game(&mut t1.lock().unwrap(), &mut t2.lock().unwrap());
-			// server.write("/D");
+			server.write("/D");
 		})
 	};
 
-	let mut quit = false;
-
-	while tetromino1.lock().unwrap().get_field().is_full() == false 
-		&& tetromino2.lock().unwrap().get_field().is_full() == false 
-		&& quit == false {
+	while !tetromino1.lock().unwrap().get_field().is_full()
+		&& !tetromino2.lock().unwrap().get_field().is_full()
+		&& !quit {
 		// Error thrown if receive queue empty
 		let received = rx.try_recv();
 
@@ -162,9 +161,28 @@ pub fn multi_player_online_host() {
 				"E" => {
 					quit = true;
 					// TODO Exit socket properly ?
-					},
+				},
 				_   => println!(""),
 			}
+		}
+
+		for c in stdin().keys() {
+			match c.unwrap() {
+				Key::Char('z')	=> tetromino2.lock().unwrap().straight_down_blocking(),
+				Key::Char('q')	=> tetromino2.lock().unwrap().left(),
+				Key::Char('s')	=> tetromino2.lock().unwrap().down(),
+				Key::Char('d')	=> tetromino2.lock().unwrap().right(),
+				Key::Char('a')	=> tetromino2.lock().unwrap().left_rot(),
+				Key::Char('e')	=> tetromino2.lock().unwrap().right_rot(),
+				Key::Char('r')	=> tetromino2.lock().unwrap().switch(),
+
+				Key::Esc		=> {
+					quit = true;
+					// TODO Exit socket properly ?
+				},
+				_				=> println!(""),
+			}
+			break;
 		}
 
 		verify_destroyed_lines(tetromino1.lock().unwrap().get_field(), 
@@ -175,27 +193,13 @@ pub fn multi_player_online_host() {
 								&mut number_of_lines2);
 		show_multi_player_game(&mut tetromino1.lock().unwrap(), 
 								&mut tetromino2.lock().unwrap());
-		
-		// for c in stdin().keys() {
-		// 	match c.unwrap() {
-		// 		Key::Char('z')	=> tetromino1.lock().unwrap().straight_down_blocking(),
-		// 		Key::Char('q')	=> tetromino1.lock().unwrap().left(),
-		// 		Key::Char('s')	=> tetromino1.lock().unwrap().down(),
-		// 		Key::Char('d')	=> tetromino1.lock().unwrap().right(),
-		// 		Key::Char('a')	=> tetromino1.lock().unwrap().left_rot(),
-		// 		Key::Char('e')	=> tetromino1.lock().unwrap().right_rot(),
-		// 		Key::Char('r')	=> tetromino1.lock().unwrap().switch(),
-
-		// 		Key::Esc		=> quit = true,
-		// 		_				=> println!(""),
-		// 	}
-		// 	break;
-		// }
 	}
 	drop(guard1);
 }
 
 pub fn multi_player_online_join() {
+	let mut quit = false;
+
 	// Get server IPv4 address
 	let mut ip = String::new();
 	print!("Please enter server IP address : ");
@@ -208,14 +212,31 @@ pub fn multi_player_online_join() {
         ip.pop();
     }
 
-	// Startint queue
-	let (tx, _rx) = mpsc::channel::<String>();
+	// Starting queue
+	let (tx, rx) = mpsc::channel::<String>();
 
 	println!("Starting client !\n");
 	start(&tx, String::from(ip));
 
+	while !quit {
+		// Error thrown if receive queue empty
+		let received = rx.try_recv();
+
+		// Handling error case
+		if received.is_ok() {
+			match received.unwrap().as_str() {
+				"D" => println!(""),// tetromino1.lock().unwrap().down(),
+				"E" => {
+					quit = true;
+					// TODO Exit socket properly ?
+				},
+				_   => println!(""),
+			}
+		}
+	}
+
     // DELETE THIS GARBAGE !
-    loop {}
+    // loop {}
 }
 
 // PRIVATE FUNCTIONS

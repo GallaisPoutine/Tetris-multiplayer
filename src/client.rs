@@ -42,27 +42,28 @@ fn connection_listener(co : &Connection, tx: &mpsc::Sender<String>) {
     let mut reading_connection = co.try_clone().unwrap();
     let tx1 = mpsc::Sender::clone(&tx);
 
-    thread::spawn(move|| {
-        let msg = reading_connection.read();
-        match msg.len() {
-            0 => {
-                println!("An error occurred, terminating connection with {}", 
-                            reading_connection.get_stream().peer_addr().unwrap());
-                reading_connection.close_socket();
-            },
-            2 => {
-                    decode(msg.as_str(), &tx1);
+    thread::spawn(move||
+        loop {
+            let msg = reading_connection.read();
+            match msg.len() {
+                0 => {
+                    println!("An error occurred, terminating connection with {}", 
+                                reading_connection.get_stream().peer_addr().unwrap());
+                    reading_connection.close_socket();
                 },
-            _ => panic!("msg.length != 2 || != 0"),
-        }
+                2 => {
+                        decode(msg.as_str(), &tx1);
+                    },
+                _ => panic!("msg.length != 2 || != 0"),
+            }
     });
 }
 
 fn decode (function: &str, tx: &mpsc::Sender<String>) {
-        let mut func : String = function.to_owned().to_string();
-        assert_eq!(func.remove(1), '/');
-        match func.as_str() {
-            "D" => tx.send("D".to_owned().to_string()).unwrap(),
-            _   => panic!("Character not found"),
-        }
+    let mut func : String = function.to_owned().to_string();
+    assert_eq!(func.remove(0), '/');
+    match func.as_str() {
+        "D" => tx.send("D".to_owned().to_string()).unwrap(),
+        _   => panic!("Character not found"),
     }
+}
