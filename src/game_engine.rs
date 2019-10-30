@@ -176,16 +176,15 @@ pub fn multi_player_online_host() {
 				},
 				_   => (),
 			}
+			verify_destroyed_lines(tetromino1.lock().unwrap().get_field(), 
+									tetromino2.lock().unwrap().get_field(), 
+									&mut number_of_lines1);
+			verify_destroyed_lines(tetromino2.lock().unwrap().get_field(), 
+									tetromino1.lock().unwrap().get_field(), 
+									&mut number_of_lines2);
+			show_multi_player_game(&mut tetromino1.lock().unwrap(), 
+									&mut tetromino2.lock().unwrap());
 		}
-
-		verify_destroyed_lines(tetromino1.lock().unwrap().get_field(), 
-								tetromino2.lock().unwrap().get_field(), 
-								&mut number_of_lines1);
-		verify_destroyed_lines(tetromino2.lock().unwrap().get_field(), 
-								tetromino1.lock().unwrap().get_field(), 
-								&mut number_of_lines2);
-		show_multi_player_game(&mut tetromino1.lock().unwrap(), 
-								&mut tetromino2.lock().unwrap());
 	}
 	drop(guard1);
 }
