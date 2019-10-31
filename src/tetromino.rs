@@ -8,6 +8,7 @@ use crate::reserve::*;
 // CONSTANTS
 
 pub const TETROMINO_LENGTH : usize = 4;
+pub const LENGTH_OF_NEXT_LIST : usize = 3;
 
 pub const ZERO : [[u8; TETROMINO_LENGTH]; TETROMINO_LENGTH] = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
 pub const CYAN : [[u8; TETROMINO_LENGTH]; TETROMINO_LENGTH] = [[0,0,1,0],[0,0,1,0],[0,0,1,0],[0,0,1,0]];
@@ -18,18 +19,12 @@ pub const ORANGE : [[u8; TETROMINO_LENGTH]; TETROMINO_LENGTH] = [[0,0,0,0],[0,5,
 pub const BLUE : [[u8; TETROMINO_LENGTH]; TETROMINO_LENGTH] = [[0,0,0,0],[0,0,6,0],[0,0,6,0],[0,6,6,0]];
 pub const MAJENTA : [[u8; TETROMINO_LENGTH]; TETROMINO_LENGTH] = [[0,0,0,0],[0,7,0,0],[7,7,7,0],[0,0,0,0]];
 
-pub const LENGTH_OF_NEXT_LIST : usize = 3;
-
-//static mut GO_DOWN_TIME : i64 = 1000;
-
 // STRUCTURE DEFINITION
 
-//pub struct Tetromino<'a> {
 pub struct Tetromino {
 	x : isize,
 	y : isize,
 	form : [[u8; TETROMINO_LENGTH]; TETROMINO_LENGTH], //matrice 4 * 4
-	//field : &'a mut Field,
 	field : Field,
 	reserve : Reserve,
 	next_list : [[[u8; TETROMINO_LENGTH]; TETROMINO_LENGTH]; LENGTH_OF_NEXT_LIST],
@@ -40,7 +35,6 @@ impl Tetromino {
 
 	// CONSTRUCTOR
 
-	//pub fn build_tetromino(field : &mut Field) -> Tetromino {
 	pub fn build_tetromino() -> Tetromino {
 		let mut next_list = [ZERO; LENGTH_OF_NEXT_LIST];
 		for i in 0..LENGTH_OF_NEXT_LIST {
@@ -50,7 +44,6 @@ impl Tetromino {
 			x : 0,
 			y : (DEPTH / 2 - 2) as isize,
 			form : Tetromino::init_form(),
-			//field,
 			field : Field::build_field(),
 			reserve : Reserve::build_reserve(),
 			next_list : next_list,
@@ -59,30 +52,13 @@ impl Tetromino {
 
 	// GETTERS
 
-	/*pub fn get_x(&self) -> isize {
-		self.x
-	}*/
-
-	/*pub fn get_y(&self) -> isize {
-		self.y
-	}*/
-
 	pub fn get_form(&self) -> [[u8; TETROMINO_LENGTH]; TETROMINO_LENGTH] {
 		self.form
 	}
 
-	/*pub fn is_moving(&self) -> bool {
-		self.moving
-	}*/
-
-	//pub fn get_field(&mut self) -> &mut Field {
 	pub fn get_field(&mut self) -> &mut Field {
-		&mut (self.field)
+		&mut self.field
 	}
-
-	/*pub fn get_reserve(&self) -> Reserve {
-		self.reserve
-	}*/
 
 	pub fn get_reserve_form(&self) -> [[u8; TETROMINO_LENGTH]; TETROMINO_LENGTH] {
 		self.reserve.get_form()
@@ -94,73 +70,49 @@ impl Tetromino {
 
 	// SETTERS
 
-	/*pub fn set_x(&mut self, x : isize) {
-		self.x = x;
-	}*/
-
-	/*pub fn set_y(&mut self, y : isize) {
-		self.y = y;
-	}*/
-
 	pub fn set_form(&mut self, form : [[u8; TETROMINO_LENGTH]; TETROMINO_LENGTH]) {
 		self.form = form;
 	}
 
-	/*pub fn set_moving(&mut self, moving : bool){
-		self.moving = moving;
-	}*/
-
 	// PUBLIC FUNCTIONS
-
-	/*pub fn up(&mut self) {
-		println!("UP");
-		self.x -= 1;
-		if self.collision_detection() == true {
-			self.x += 1;
-		} else {
-			show_grid(self, self.field);
-		}
-	}*/
 
 	pub fn down(&mut self){
 		self.x += 1;
-		if self.collision_detection() == true {
+		if self.collision_detection() {
 			self.x -= 1;
 		}
 	}
 
 	pub fn left(&mut self){
 		self.y -= 1;
-		if self.collision_detection() == true {
+		if self.collision_detection() {
 			self.y += 1;
 		}
 	}
 
 	pub fn right(&mut self){
 		self.y += 1;
-		if self.collision_detection() == true {
+		if self.collision_detection() {
 			self.y -= 1;
 		}
 	}
 
 	pub fn down_blocking (&mut self){
 		self.x += 1;
-		if self.collision_detection() == true {
+		if self.collision_detection() {
 			self.x -= 1;
 			self.put_in_grid();
 			self.change();
-			//self.moving = false;
 		}
 	}
 
 	pub fn straight_down_blocking (&mut self){
-		while self.collision_detection() == false {
+		while !self.collision_detection() {
 			self.x += 1;
 		}
 		self.x -= 1;
 		self.put_in_grid();
 		self.change();
-		//self.moving = false;
 	}
 
 	pub fn left_rot(&mut self){
@@ -170,9 +122,12 @@ impl Tetromino {
 				tmp[i][j] = self.form[j][TETROMINO_LENGTH - 1 - i];
 			}
 		}
+
+
+
 		let form_save = self.form;
 		self.form = tmp;
-		if self.collision_detection() == true {
+		if self.collision_detection() {
 			self.form = form_save;
 		}
 	}
@@ -186,7 +141,7 @@ impl Tetromino {
 		}
 		let form_save = self.form;
 		self.form = tmp;
-		if self.collision_detection() == true {
+		if self.collision_detection() {
 			self.form = form_save;
 		}
 	}
@@ -220,17 +175,15 @@ impl Tetromino {
 	pub fn change(&mut self) {
 		self.reserve.set_switched(false);
 		self.field.count_complete_lines(self.x as usize);
-		if self.field.is_in_losszone() == true {
-			// STOP TIMER
-		} else {
+		if !self.field.is_in_losszone() {
 			self.next();
 		}
 	}
 
 	pub fn switch(&mut self){
-		if self.reserve.is_switched() == false {
+		if !self.reserve.is_switched() {
 			self.reserve.set_switched(true);
-			if self.reserve.is_empty() == true {
+			if self.reserve.is_empty() {
 				self.reserve.set_form(self.form);
 				self.next();
 			} else {
@@ -243,18 +196,17 @@ impl Tetromino {
 		}
 	}
 
-	pub fn next(&mut self){
+	// PRIVATE FUNCTIONS
+
+	fn next(&mut self){
 		self.x = 0;
 		self.y = (DEPTH/2 -2) as isize;
 		self.set_form(self.next_list[0]);
-		//self.set_moving(true);
 		for i in 0..LENGTH_OF_NEXT_LIST -1 {
 			self.next_list[i] = self.next_list[i+1];
 		}
 		self.next_list[LENGTH_OF_NEXT_LIST - 1] = Tetromino::init_form();
 	}
-
-	// PRIVATE FUNCTIONS
 
 	fn collision_detection(&self) -> bool{
 		for i in 0..TETROMINO_LENGTH {
@@ -271,32 +223,6 @@ impl Tetromino {
 		false
 	}
 
-	/*fn collision_detection2(&self) -> bool{
-		let grid = self.field.get_grid();
-		let skip : usize = self.x.min(0) as usize;
-		let nbpre : usize = if self.x < 0 {-self.x as usize} else {0};
-		//let nbpreup : usize = if self.y < 0 {-self.y as usize} else {0};
-		for (i, (lg, lt)) in	(0 .. nbpre).map(|_|
-									&[1; DEPTH]		// inserting a wall
-								).chain(
-									grid.iter().skip(
-										self.x as usize
-									)
-								).zip(
-									self.form.iter()
-								).enumerate() {
-			//for (j, (&cg, &ct)) in (0..nbpreup).map(|_| &[1; LENGTH]).chain(lg.iter()
-			.skip(self.y as usize)).zip(lt.iter()).enumerate() {
-			for (j, (&cg, &ct)) in lg.iter().skip(self.y as usize).zip(lt.iter()).enumerate() {
-				println!("{}, {} = {}", i, j, cg);
-				if cg != 0 && ct != 0 {
-					return true;
-				}
-			}
-		}
-		false
-	}*/
-
 	fn put_in_grid(&mut self){
 		let mut grid = self.field.get_grid();
 		for i in 0..TETROMINO_LENGTH {
@@ -308,15 +234,5 @@ impl Tetromino {
 		}
 		self.field.set_grid(grid);
 	}
-
-	/*fn show(&self){
-		println!("COORD X : {}, Y : {}", self.x, self.y);
-		for i in 0..TETROMINO_LENGTH {
-			for j in 0..TETROMINO_LENGTH {
-				print!("{}", self.form[i][j]);
-			}
-			println!();
-		}
-	}*/
 }
 

@@ -17,9 +17,6 @@ mod connection;
 
 fn main() {
 	main_menu();
-	//game_engine::single_player();
-	//game_engine::multi_player_local();
-	//game_engine::timer_test();
 }
 
 fn main_menu() {
@@ -38,12 +35,10 @@ fn main_menu() {
 			Err(_) => continue,
 		};
 	}
-	if choice == 1 {
-		singleplayer_menu();
-	} else if choice == 2 {
-		multiplayer_menu();
-	} else {
-
+	match choice {
+		1 => singleplayer_menu(),
+		2 => multiplayer_menu(),
+		_ => println!("exiting..."),
 	}
 }
 
@@ -62,10 +57,9 @@ fn singleplayer_menu() {
 			Err(_) => continue,
 		};
 	}
-	if choice == 1 {
-		game_engine::single_player();
-	} else if choice == 2 {
-		main_menu();
+	match choice {
+		1 => game_engine::single_player(),
+		_ => main_menu(),
 	}
 }
 
@@ -86,17 +80,10 @@ fn multiplayer_menu() {
 			Err(_) => continue,
 		};
 	}
-	if choice == 1 {
-		game_engine::multi_player_local();
-	} else if choice == 2 {
-		//START HOSTED GAME
-		game_engine::multi_player_online_host();
-	} else if choice == 3 {
-		// JOIN GAME HOSTED BY ANOTHER PLAYER
-		game_engine::multi_player_online_join();
-	} else if choice == 4 {
-		main_menu();
-	} else {
-		
+	match choice {
+		1 => game_engine::multi_player_local(),
+		2 => game_engine::multi_player_online_host(),
+		3 => game_engine::multi_player_online_join(),
+		_ => main_menu(),
 	}
 }

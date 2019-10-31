@@ -1,5 +1,5 @@
 [package]
-name = "tetris"
+name = "tetris_v2"
 version = "0.1.0"
 authors = ["GIRARD Olivier <olivier.girard@reseau.eseo.fr>"]
 edition = "2018"
@@ -11,5 +11,5 @@ rand = "0.7.2"
 termion = "1.5.3"
 timer = "0.2.0"
 chrono = "0.4.9"
-tokio = "0.1.22"
-nix = "0.15.0"
+#tokio = "0.1.22"
+#nix = "0.15.0"

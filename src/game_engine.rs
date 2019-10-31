@@ -1,12 +1,11 @@
 // IMPORTS
 
-extern crate timer;
-extern crate chrono;
-
+use timer;
+use chrono;
+use termion::{event::Key, raw::IntoRawMode, input::TermRead};
 use std::io::*;
 use std::sync::{Arc, Mutex, mpsc};
 use std::thread;
-use termion::{event::Key, raw::IntoRawMode, input::TermRead};
 
 use crate::tetromino::*;
 use crate::field::*;
@@ -33,7 +32,7 @@ pub fn single_player() {
 	};
 
 	let mut quit = false;
-	while tetromino.lock().unwrap().get_field().is_full() == false && quit == false{
+	while !tetromino.lock().unwrap().get_field().is_full() && !quit{
 		for c in stdin().keys() {
 			match c.unwrap() {
 				Key::Char('z')	=> tetromino.lock().unwrap().straight_down_blocking(),
@@ -76,7 +75,7 @@ pub fn multi_player_local() {
 	};
 
 	let mut quit = false;
-	while tetromino1.lock().unwrap().get_field().is_full() == false && tetromino2.lock().unwrap().get_field().is_full() == false && quit == false{
+	while !tetromino1.lock().unwrap().get_field().is_full() && !tetromino2.lock().unwrap().get_field().is_full() && !quit{
 		for c in stdin().keys() {
 			match c.unwrap() {
 				Key::Char('z')	=> tetromino1.lock().unwrap().straight_down_blocking(),

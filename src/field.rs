@@ -49,14 +49,6 @@ impl Field {
 		self.grid = grid;
 	}
 
-	/*pub fn set_full(&mut self, full : bool) {
-		self.full = full;
-	}*/
-
-	/*pub fn set_number_of_lines(&mut self, number_of_lines : u32) {
-		self.number_of_lines = number_of_lines;
-	}*/
-
 	// PUBLIC FUNCTIONS
 
 	pub fn add_lines(&mut self, number_of_lines : usize){
@@ -77,9 +69,9 @@ impl Field {
 
 	pub fn is_in_losszone(&mut self) -> bool{
 		let mut i : usize = 0;
-		while i < 4 && self.full == false {
+		while i < 4 && !self.full {
 			let mut j : usize = 0;
-			while j < DEPTH && self.full == false {
+			while j < DEPTH && !self.full {
 				if self.grid[i][j] != 0 {
 					self.full = true;
 				}
@@ -90,22 +82,12 @@ impl Field {
 		self.full
 	}
 
-	/*pub fn show_grid(&self) {
-		for i in 0..LENGTH {
-			for j in 0..DEPTH {
-				print!("{}", self.grid[i][j]);
-			}
-			println!();
-		}
-	}*/
-
 	pub fn count_complete_lines(&mut self, mut x : usize){
 		let mut consecutive_count = 0;
 		let mut i : usize = TETROMINO_LENGTH - 1 + x;
 		while i >= x{
 			let mut line : u8 = 0;
 			for j in 0..DEPTH {
-				//if i >= 0 && j >= 0 && i < LENGTH && j < DEPTH && self.grid[i][j] != 0 {
 				if i < LENGTH && j < DEPTH && self.grid[i][j] != 0 {
 					line += 1;
 				}
@@ -121,7 +103,6 @@ impl Field {
 				consecutive_count += 1;
 			} else {
 				self.number_of_lines += consecutive_count;
-				//addPoints
 				consecutive_count = 0;
 			}
 			if i > 0 {
@@ -132,7 +113,5 @@ impl Field {
 		}
 		self.number_of_lines += consecutive_count;
 	}
-
-	// PRIVATE FUNCTIONS
 }
 

@@ -2,8 +2,6 @@
 
 use crate::tetromino::{TETROMINO_LENGTH, ZERO};
 
-// CONSTANTS
-
 // STRUCTURE DEFINITION
 
 pub struct Reserve {
@@ -45,17 +43,6 @@ impl Reserve {
 	// PUBLIC FUNCTIONS
 
 	pub fn is_empty(&self) -> bool{
-		for i in 0..TETROMINO_LENGTH {
-			for j in 0..TETROMINO_LENGTH {
-				if self.form[i][j] != 0 {
-					return false
-				}
-			}
-		}
-		true
+		self.form.iter().all(|line|line.iter().all(|&cell|cell == 0))
 	}
-
-	// PRIVATE FUNCTIONS
-
 }
-
