@@ -1,7 +1,7 @@
 [package]
 name = "tetris_v2"
-version = "0.1.0"
-authors = ["GIRARD Olivier <olivier.girard@reseau.eseo.fr>"]
+version = "0.1.2"
+authors = ["GIRARD Olivier <olivier.girard@reseau.eseo.fr>", "GALLAIS-POU Raphaël <raphael.gallaispou@reseau.eseo.fr>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
