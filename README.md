@@ -1,4 +1,4 @@
-# Multijoueur Tetris
+# Multiplayer Tetris
 
 ## Build
 Execute `cargo build`
