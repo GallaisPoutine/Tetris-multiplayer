@@ -1,23 +1,21 @@
 use std::io;
 use std::io::{Read, Write};
-use std::net::{TcpStream, TcpListener, Shutdown};
+use std::net::{Shutdown, TcpListener, TcpStream};
 use std::str::from_utf8;
 
-
 pub struct Connection {
-    stream : TcpStream,
+    stream: TcpStream,
 }
 
 impl Connection {
-
-    pub fn new(is_server : bool, ip : String) -> Connection {
+    pub fn new(is_server: bool, ip: String) -> Connection {
         if is_server {
             Connection {
-                stream : Connection::init_socket_serveur(),
+                stream: Connection::init_socket_serveur(),
             }
         } else {
             Connection {
-                stream : Connection::init_socket_client(ip),
+                stream: Connection::init_socket_client(ip),
             }
         }
     }
@@ -37,13 +35,13 @@ impl Connection {
         }
     }
 
-    fn init_socket_client(mut ip : String) -> TcpStream {
+    fn init_socket_client(mut ip: String) -> TcpStream {
         ip.push_str(":12345");
         match TcpStream::connect(ip) {
             Ok(stream) => {
                 println!("Successfully connected to server in port 12345");
                 stream
-            },
+            }
             Err(e) => {
                 panic!("Failed to connect: {}", e);
             }
@@ -76,6 +74,6 @@ impl Connection {
 
     pub fn try_clone(&self) -> io::Result<Connection> {
         let stream = self.stream.try_clone()?;
-        Ok(Connection {stream: stream})
+        Ok(Connection { stream: stream })
     }
 }
