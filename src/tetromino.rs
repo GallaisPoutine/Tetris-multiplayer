@@ -164,7 +164,7 @@ impl Tetromino {
     }
 
     pub fn init_form() -> [[u8; TETROMINO_LENGTH]; TETROMINO_LENGTH] {
-        let random = rand::thread_rng().gen_range(1, 8);
+        let random = rand::thread_rng().gen_range(1..8);
         let form: [[u8; TETROMINO_LENGTH]; TETROMINO_LENGTH];
         match random {
             1 => form = CYAN,

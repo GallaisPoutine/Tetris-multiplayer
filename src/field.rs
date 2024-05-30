@@ -51,7 +51,7 @@ impl Field {
     // PUBLIC FUNCTIONS
 
     pub fn add_lines(&mut self, number_of_lines: usize) {
-        let random = rand::thread_rng().gen_range(0, 10);
+        let random = rand::thread_rng().gen_range(0..10);
         for _i in 0..number_of_lines {
             for j in 0..LENGTH - 1 {
                 self.grid[j] = self.grid[j + 1];
