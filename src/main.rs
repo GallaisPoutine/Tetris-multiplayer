@@ -18,12 +18,10 @@ mod tetromino;
 // FUNCTIONS
 
 fn main() -> anyhow::Result<()> {
-    main_menu();
-
-    Ok(())
+    return main_menu();
 }
 
-fn main_menu() {
+fn main_menu() -> anyhow::Result<()> {
     let mut choice: u32 = 0;
     while choice > 3 || choice < 1 {
         print!("{}{}", clear::All, cursor::Goto(1, 1));
@@ -33,22 +31,22 @@ fn main_menu() {
         println!("3 - QUIT");
 
         let mut input = String::new();
-        io::stdin()
-            .read_line(&mut input)
+        io::stdin().read_line(&mut input)
             .expect("Failed to read line");
         choice = match input.trim().parse() {
             Ok(num) => num,
             Err(_) => continue,
         };
     }
+
     match choice {
-        1 => singleplayer_menu(),
-        2 => multiplayer_menu(),
-        _ => println!("exiting..."),
+        1 => return singleplayer_menu(),
+        2 => return multiplayer_menu(),
+        _ => return Ok(println!("exiting...")),
     }
 }
 
-fn singleplayer_menu() {
+fn singleplayer_menu() -> anyhow::Result<()> {
     let mut choice: u32 = 0;
     while choice > 2 || choice < 1 {
         print!("{}{}", clear::All, cursor::Goto(1, 1));
@@ -58,8 +56,7 @@ fn singleplayer_menu() {
 
         let mut input = String::new();
         io::stdin()
-            .read_line(&mut input)
-            .expect("Failed to read line");
+            .read_line(&mut input)?;
         choice = match input.trim().parse() {
             Ok(num) => num,
             Err(_) => continue,
@@ -67,11 +64,13 @@ fn singleplayer_menu() {
     }
     match choice {
         1 => game_engine::single_player(),
-        _ => main_menu(),
+        _ => main_menu()?,
     }
+
+    Ok(())
 }
 
-fn multiplayer_menu() {
+fn multiplayer_menu() -> anyhow::Result<()> {
     let mut choice: u32 = 0;
     while choice > 4 || choice < 1 {
         print!("{}{}", clear::All, cursor::Goto(1, 1));
@@ -94,6 +93,8 @@ fn multiplayer_menu() {
         1 => game_engine::multi_player_local(),
         2 => game_engine::multi_player_online_host(),
         3 => game_engine::multi_player_online_join(),
-        _ => main_menu(),
+        _ => main_menu()?,
     }
+
+    Ok(())
 }
