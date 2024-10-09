@@ -4,6 +4,8 @@ use std::io;
 //use game_engine::*;
 use termion::{clear, cursor};
 
+use anyhow;
+
 mod client;
 mod connection;
 mod field;
@@ -15,8 +17,10 @@ mod tetromino;
 
 // FUNCTIONS
 
-fn main() {
+fn main() -> anyhow::Result<()> {
     main_menu();
+
+    Ok(())
 }
 
 fn main_menu() {
