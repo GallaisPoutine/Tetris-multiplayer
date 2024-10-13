@@ -51,7 +51,7 @@ impl Tetromino {
             x: 0,
             y: (DEPTH / 2 - 2) as isize,
             form: Tetromino::init_form(),
-            field: Field::build_field(),
+            field: Field::new(),
             reserve: Reserve::build_reserve(),
             next_list: next_list,
         }
@@ -226,7 +226,7 @@ impl Tetromino {
                 {
                     return true;
                 } else if self.form[i][j] != 0
-                    && self.field.get_grid()[(i as isize + self.x) as usize]
+                    && self.field.grid[(i as isize + self.x) as usize]
                         [(j as isize + self.y) as usize]
                         != 0
                 {
@@ -238,7 +238,7 @@ impl Tetromino {
     }
 
     fn put_in_grid(&mut self) {
-        let mut grid = self.field.get_grid();
+        let mut grid = self.field.grid.clone();
         for i in 0..TETROMINO_LENGTH {
             for j in 0..TETROMINO_LENGTH {
                 if self.form[i][j] != 0 {

@@ -31,7 +31,7 @@ pub fn single_player() {
     };
 
     let mut quit = false;
-    while !tetromino.lock().unwrap().get_field().is_full() && !quit {
+    while !tetromino.lock().unwrap().get_field().full && !quit {
         for c in stdin().keys() {
             match c.unwrap() {
                 Key::Char('z') => tetromino.lock().unwrap().straight_down_blocking(),
@@ -77,8 +77,8 @@ pub fn multi_player_local() {
     };
 
     let mut quit = false;
-    while !tetromino1.lock().unwrap().get_field().is_full()
-        && !tetromino2.lock().unwrap().get_field().is_full()
+    while !tetromino1.lock().unwrap().get_field().full
+        && !tetromino2.lock().unwrap().get_field().full
         && !quit
     {
         for c in stdin().keys() {
@@ -159,8 +159,8 @@ pub fn multi_player_online_host() {
         })
     };
 
-    while !tetromino1.lock().unwrap().get_field().is_full()
-        && !tetromino2.lock().unwrap().get_field().is_full()
+    while !tetromino1.lock().unwrap().get_field().full
+        && !tetromino2.lock().unwrap().get_field().full
         && !quit
     {
         // Error thrown if receive queue empty
@@ -261,7 +261,7 @@ pub fn multi_player_online_join() {
 // PRIVATE FUNCTIONS
 
 fn verify_destroyed_lines(field1: &Field, field2: &mut Field, number_of_lines: &mut u32) {
-    let difference = field1.get_number_of_lines() - *number_of_lines;
+    let difference = field1.number_of_lines - *number_of_lines;
     if difference > 0 && difference < 4 {
         field2.add_lines((difference - 1) as usize);
         field2.is_in_losszone();
@@ -269,7 +269,7 @@ fn verify_destroyed_lines(field1: &Field, field2: &mut Field, number_of_lines: &
         field2.add_lines((difference) as usize);
         field2.is_in_losszone();
     }
-    *number_of_lines = field1.get_number_of_lines();
+    *number_of_lines = field1.number_of_lines;
 }
 
 fn key_listener_host(tx: &mpsc::Sender<String>) {

@@ -1,3 +1,4 @@
+// TODO use ratatui
 // IMPORTS
 
 use termion::{clear, cursor, terminal_size};
@@ -232,7 +233,7 @@ fn print_grid_line(x: usize, tetromino: &mut Tetromino) {
         }
         let tcolor = tetromino.is_here(x, j);
         let color = if tcolor == 0 {
-            tetromino.get_field().get_grid()[x][j]
+            tetromino.get_field().grid[x][j]
         } else {
             tcolor
         };

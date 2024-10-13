@@ -12,50 +12,34 @@ pub const DEPTH: usize = 10;
 // STRUCTURE DEFINITION
 
 pub struct Field {
-    grid: [[u8; DEPTH]; LENGTH],
-    full: bool,
-    number_of_lines: u32,
+    pub grid: Vec<Vec<u8>>,
+    pub full: bool,
+    pub number_of_lines: u32,
 }
 
 impl Field {
-    // CONSTRUCTOR
 
-    pub fn build_field() -> Field {
+    pub fn new() -> Field {
         Field {
-            grid: [[0; DEPTH]; LENGTH],
+            grid: vec![vec![0; DEPTH]; LENGTH],
             full: false,
             number_of_lines: 0,
         }
     }
 
-    // GETTERS
-
-    pub fn get_grid(&self) -> [[u8; DEPTH]; LENGTH] {
-        self.grid
-    }
-
-    pub fn is_full(&self) -> bool {
-        self.full
-    }
-
-    pub fn get_number_of_lines(&self) -> u32 {
-        self.number_of_lines
-    }
-
-    // SETTERS
-
-    pub fn set_grid(&mut self, grid: [[u8; DEPTH]; LENGTH]) {
-        self.grid = grid;
-    }
+     // SETTERS
+ 
+     pub fn set_grid(&mut self, grid: Vec<Vec<u8>>) {
+         self.grid = grid;
+     }
 
     // PUBLIC FUNCTIONS
 
     pub fn add_lines(&mut self, number_of_lines: usize) {
         let random = rand::thread_rng().gen_range(0..10);
         for _i in 0..number_of_lines {
-            for j in 0..LENGTH - 1 {
-                self.grid[j] = self.grid[j + 1];
-            }
+            self.grid.rotate_left(1);
+
             for j in 0..DEPTH {
                 if j != random {
                     self.grid[LENGTH - 1][j] = 8;
@@ -94,7 +78,8 @@ impl Field {
             if line == 10 {
                 let mut j: usize = i;
                 while j >= 1 {
-                    self.grid[j] = self.grid[j - 1];
+                    self.grid.rotate_left(1);
+                    //self.grid[j] = self.grid[j - 1];
                     j -= 1;
                 }
                 x += 1;
