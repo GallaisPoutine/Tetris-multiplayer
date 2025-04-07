@@ -8,7 +8,7 @@ edition = "2018"
 
 [dependencies]
 rand = "0.9"
-termion = "4.0.4"
+termion = "4.0.5"
 timer = "0.2.0"
 chrono = "0.4.40"
 anyhow = "1.0.97"
