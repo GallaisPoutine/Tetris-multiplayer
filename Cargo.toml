@@ -9,7 +9,7 @@ edition = "2018"
 [dependencies]
 anyhow = "1.0.99"
 chrono = "0.4.41"
-termion = "4.0.5"
+termion = "4.0.6"
 timer = "0.2.0"
 rand = "0.9"
 #tokio = "0.1.22"
